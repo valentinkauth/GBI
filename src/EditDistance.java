@@ -16,7 +16,7 @@ public class EditDistance {
     private String xSequence;
     private String ySequence;
 
-    // Custom enum class for predecessor direction
+    // Custom enum class for predecessor declaration in traceback matrix
     public enum Predecessor {
         DIAGONAL, VERTICAL, HORIZONTAL
     }
@@ -35,7 +35,7 @@ public class EditDistance {
 
     public int align(String x, String y) {
 
-        // Define gap and mismatch score
+        // Define gap and mismatch scores (normal Levenshtein distance values chosen)
         final int gapCount = 1;
         final int mismatchCount = 1;
         final int matchCount = 0;
@@ -44,29 +44,32 @@ public class EditDistance {
         xSequence = x;
         ySequence = y;
 
-        // Instantiate integer matrix
+        // Instantiate scoring and traceback matrices
         scoringMatrix = new int[x.length() + 1][y.length() + 1];
         tracebackMatrix = new Predecessor[x.length() + 1][y.length() + 1];
 
 
         // Initialize first element with 0
         scoringMatrix[0][0] = 0;
+        // Initialize first element with DIAGONAL
         tracebackMatrix[0][0] = Predecessor.DIAGONAL;
 
-        // Initialize first row and column by adding up the gap score
+        // Initialize first row and column by adding up the gap score and corresponding direction in traceback matrix
         for (int i = 1; i < x.length(); i++) {
             scoringMatrix[i][0] = i * gapCount;
             tracebackMatrix[i][0] = Predecessor.VERTICAL;
         }
-
         for (int j = 1; j < y.length(); j++) {
             scoringMatrix[0][j] = j * gapCount;
             tracebackMatrix[0][j] = Predecessor.HORIZONTAL;
         }
 
 
+        // Iterate through matrices looking for the best (minimum) possible score for each cell
         for (int i = 1; i <= x.length(); i++)
             for (int j = 1; j <= y.length(); j++) {
+
+                // Check diagonal, vertical and horizontal neighboring cells for minimum score
                 int horizontalScore = scoringMatrix[i][j - 1] + gapCount;
                 int verticalScore = scoringMatrix[i - 1][j] + gapCount;
                 int diagonalScore = scoringMatrix[i - 1][j - 1] + ((x.charAt(i - 1) == y.charAt(j - 1)) ? matchCount : mismatchCount);
@@ -114,17 +117,19 @@ public class EditDistance {
         StringBuilder sbX = new StringBuilder(xSequence.length());
         StringBuilder sbY = new StringBuilder(ySequence.length());
 
-
+        // Set starting point for traceback matrix backwards iteration
         int i = tracebackMatrix.length - 1;
         int j = tracebackMatrix[0].length - 1;
 
-
+        // Iterate backwards through traceback matrix until initial cell (0,0) is reached
         while (!(i == 0 && j == 0)) {
 
-            // Count which predecessor achieved the best (minimum score)
+            // Check current cell for predecessor (where the best score came from)
             Predecessor predecessor = tracebackMatrix[i][j];
 
+            // Add values to string builder based on the direction of predecessor cell
             switch (predecessor) {
+                // Diagonal --> Match, add both letters to the aligned sequences
                 case DIAGONAL:
                     sbX.append(xSequence.charAt(i - 1));
                     sbY.append(ySequence.charAt(j - 1));
@@ -132,12 +137,14 @@ public class EditDistance {
                     j -= 1;
                     break;
 
+                // Horizontal --> Add gap to first/ aligned sequence, add letter to second aligned sequence
                 case HORIZONTAL:
                     sbX.append("-");
                     sbY.append(ySequence.charAt(j - 1));
                     j -= 1;
                     break;
 
+                // Vertical --> Add gap to second aligned sequence, add letter to first aligned sequence
                 case VERTICAL:
                     sbX.append(xSequence.charAt(i - 1));
                     sbY.append("-");
