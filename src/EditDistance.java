@@ -167,13 +167,12 @@ public class EditDistance {
      * @param args commandline arguments
      */
     public static void main(String[] args) throws IOException {
-        System.out.println("YOUR_NAME_HERE_PLEASE");
+        System.out.println("Valentin Kauth & Ryan Goga");
 
-//        if (args.length != 1)
-//            throw new IOException("Usage: EditDistanceDP fileName");
+        if (args.length != 1)
+            throw new IOException("Usage: EditDistanceDP fileName");
 
-        // String fileName = args[0];
-        String fileName = "src/sequences2.fasta";
+        String fileName = args[0];
         FileReader reader = new FileReader(fileName);
 
         FastA fastA = new FastA();
