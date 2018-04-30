@@ -5,7 +5,7 @@ import java.io.IOException;
 
 /**
  * Compute edit distance using dynamic programming
- * YOUR_NAME_HERE_PLEASE
+ * Valentin Kauth & Ryan Goga
  * GBI, Daniel Huson, 4.2018
  */
 public class EditDistance {
